@@ -22,6 +22,6 @@ public interface BookServices {
 
     BookResponse updateBook(Long id, BookRequest bookRequest);
 
-    ApiResponse daleteBookById(Long id);
+    ApiResponse deleteBookById(Long id);
 
 }

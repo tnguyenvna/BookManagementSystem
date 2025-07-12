@@ -1,14 +1,17 @@
 package com.tnguyenvna.BookManagementSystem.BookManagementSystem.service.impl;
 
+import java.time.LocalDateTime;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tnguyenvna.BookManagementSystem.BookManagementSystem.dto.request.BookRequest;
@@ -78,39 +81,115 @@ public class BookServiceImpl implements BookServices {
                     .pageSize(booklist.getSize())
                     .build();
         } catch (Exception e) {
-            log.info("Error occurred while retrieving all Books with pagination: " + e.getMessage());
+            log.error("Error occurred while retrieving all Books with pagination: " + e.getMessage());
             throw new NotFoundException("Error Occurred while retrieving Book List: " + e.getMessage());
         }
     }
 
     @Override
     public BookResponse getBookById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBookById'");
+        try {
+            BookLibrary bookLibrary = bookRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Book with id " + id + " does not exist"));
+            return bookMapper.mapBookLibraryToBookResponse(bookLibrary);
+        } catch (Exception ex) {
+            log.error("Error while rretrieving Book: {}", ex.getMessage());
+            throw new NotFoundException("Error Occurred while retrieving Book: " + ex.getMessage());
+        }
     }
 
     @Override
     public List<BookResponse> searchBookTitleOrAuthorOrIsbn(String searchText) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'searchBookTitleOrAuthorOrIsbn'");
+        try {
+            List<BookLibrary> bookLibraries = bookRepository.searchByTitleOrAuthorOrIsbn(searchText, searchText,
+                    searchText);
+
+            List<BookResponse> bookResponses = new ArrayList<>();
+            for (BookLibrary bookLibrary : bookLibraries) {
+                BookResponse bookResponse = modelMapper.map(bookLibrary, BookResponse.class);
+                bookResponses.add(bookResponse);
+            }
+            if (!bookResponses.isEmpty()) {
+                log.info("Book successfuly retrieved from search text " + searchText);
+                return bookResponses;
+            } else {
+                throw new NotFoundException("Book with search text " + searchText + " does not exist");
+            }
+        } catch (Exception ex) {
+            log.error("Error while searching Boo: {}", ex.getMessage());
+            throw new NotFoundException("Error Occurred while search Book: " + ex.getMessage());
+        }
     }
 
     @Override
     public List<BookResponse> searchBookByPublicationYear(Year publicationYear) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'searchBookByPublicationYear'");
+        try {
+            List<BookLibrary> bookLibraries = bookRepository.findAllBooksByPublicationYear(publicationYear);
+            List<BookResponse> bookResponses = new ArrayList<>();
+            for (BookLibrary bookLibrary : bookLibraries) {
+                BookResponse response = modelMapper.map(bookLibrary, BookResponse.class);
+                bookResponses.add(response);
+            }
+            if (!bookResponses.isEmpty()) {
+                log.info("Book successfuly retrieved by publication year: " + publicationYear);
+                return bookResponses;
+            } else {
+                throw new NotFoundException("Book with publication year " + publicationYear + " Not Found");
+            }
+        } catch (Exception ex) {
+            log.error("Error while searching Book: {}", ex.getMessage());
+            throw new NotFoundException("Error Occurred while searching Book " + ex.getMessage());
+        }
     }
 
     @Override
     public BookResponse updateBook(Long id, BookRequest bookRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateBook'");
+        try {
+            Optional<BookLibrary> existingBook = bookRepository.findById(id);
+            if (existingBook.isPresent()) {
+                BookLibrary updateBook = existingBook.get();
+                bookInfoValidations.isBookTitleAlreadyExists(bookRequest.getTitle());
+                if (bookRequest.getTitle() != null && !bookRequest.getTitle().equals(updateBook.getTitle())) {
+                    bookInfoValidations.validateTitle(bookRequest.getTitle());
+                    updateBook.setTitle(bookRequest.getTitle());
+                }
+                if (bookRequest.getAuthor() != null && !bookRequest.getAuthor().equals(updateBook.getAuthor())) {
+                    bookInfoValidations.validateAuthor(bookRequest.getAuthor());
+                    updateBook.setAuthor(bookRequest.getAuthor());
+                }
+                if (bookRequest.getIsbn() != null) {
+                    updateBook.setIsbn(bookRequest.getIsbn());
+                }
+                if (bookRequest.getPublivationYear() != null
+                        && !bookRequest.getPublivationYear().equals(updateBook.getPublicationYear())) {
+                    bookInfoValidations.validatePublicationYear(bookRequest.getPublivationYear());
+                    updateBook.setPublicationYear(bookRequest.getPublivationYear());
+                }
+
+                BookLibrary bookLibrary = bookRepository.save(updateBook);
+                BookResponse bookResponse = modelMapper.map(bookLibrary, BookResponse.class);
+                log.info("Book successfully updated");
+                return bookResponse;
+            } else {
+                throw new NotFoundException("Book with id " + id + " not found and cannot be updated");
+            }
+        } catch (Exception ex) {
+            log.error("Error while updating Book: {}", ex.getMessage());
+            throw new NotFoundException("Error Occurred while updating Book " + ex.getMessage());
+        }
+
     }
 
     @Override
-    public ApiResponse daleteBookById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'daleteBookById'");
+    public ApiResponse deleteBookById(Long id) {
+        try {
+            bookRepository.deleteById(id);
+            log.info("Book successfully deleted with id: " + id);
+        } catch (Exception ex) {
+            log.error("Error while deleting Book: {}", ex.getMessage());
+            throw new NotFoundException("Error Occurred while deleting Book: " + ex.getMessage());
+        }
+        return ApiResponse.builder().status(HttpStatus.OK).dateTime(LocalDateTime.now()).build();
     }
 
 }

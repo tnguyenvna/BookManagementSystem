@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PagianatedBookResponse {
+public class PaginatedBookResponse {
     private List<BookResponse> contents;
     private int pageElementCount;
     private int pageSize;

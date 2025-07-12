@@ -61,7 +61,7 @@ public class BookInfoValidations {
     public void validateAuthor(String author) {
         if (author == null || author.isBlank() || author.length() < 2 || author.length() > 50) {
             log.error("Author Name(s): " + author + " must be between 2 and 50 characters");
-            throw new ValidAuthorException("Author Name(s): \" +author +\" must be between 2 and 50 characters");
+            throw new ValidAuthorException("Author Name(s) must be between 2 and 50 characters");
         }
     }
 
