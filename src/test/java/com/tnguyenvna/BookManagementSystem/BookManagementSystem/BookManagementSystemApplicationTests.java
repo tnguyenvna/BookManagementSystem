@@ -74,7 +74,7 @@ class BookManagementSystemApplicationTests {
 		verify(bookInfoValidations).isBookTitleAlreadyExists(bookRequest.getTitle());
 		verify(bookInfoValidations).validateTitle(bookRequest.getTitle());
 		verify(bookInfoValidations).validateAuthor(bookRequest.getAuthor());
-		verify(bookInfoValidations).validatePublicationYear(bookRequest.getPublivationYear());
+		verify(bookInfoValidations).validatePublicationYear(bookRequest.getPublicationYear());
 		verify(bookRepository).save(bookLibrary);
 		verify(bookMapper).mapBookRequestToBookLibrary(bookRequest);
 		verify(bookMapper).mapBookLibraryToBookResponse(bookLibrary);
@@ -239,6 +239,8 @@ class BookManagementSystemApplicationTests {
 
 		verify(bookRepository).deleteById(bookId);
 
-		assertEquals("Error Occurred while deleting Book: ", errorMessage, exception.getMessage());
+		// assertEquals("Error Occurred while deleting the Book: ", errorMessage, exception.getMessage());
+		assertEquals(errorMessage, exception.getMessage());
+
 	}
 }

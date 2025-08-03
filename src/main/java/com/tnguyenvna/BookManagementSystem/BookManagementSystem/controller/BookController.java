@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import static com.tnguyenvna.BookManagementSystem.BookManagementSystem.util.ApiResponseUtils.buildSuccessResponse;
 
+import java.time.Year;
 import java.util.List;
 
 @Tag(name = "Mobilise Book Management System - BookLibrary Controller", description = "Exposes REST APIs for Book Library Controller")
@@ -38,7 +39,7 @@ public class BookController {
 
     @Operation(summary = "Add New Book REST API", description = "This REST API is used to Add a New Book to a Database")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<ApiResponse> addNewBook(@RequestBody BookRequest bookRequest) {
         BookResponse response = bookServices.addNewBook(bookRequest);
         return ResponseEntity.status(HttpStatus.OK).body(buildSuccessResponse(response, HttpStatus.OK));
@@ -67,6 +68,14 @@ public class BookController {
     public ResponseEntity<ApiResponse> searchBookByTitleOrAuthorOrIsbn(@PathVariable String searchText) {
         List<BookResponse> bookResponses = bookServices.searchBookTitleOrAuthorOrIsbn(searchText);
         return ResponseEntity.status(HttpStatus.OK).body(buildSuccessResponse(bookResponses, HttpStatus.OK));
+    }
+
+    @Operation(summary = "Search Books by Publication Year REST API", description = "This REST API is used to Search Books by Publication Year")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
+    @GetMapping("search/by/publicationYear/{publicationYear}")
+    public ResponseEntity<ApiResponse> searchBookByPublicationYear(@PathVariable Year publicationYear) {
+        List<BookResponse> response = bookServices.searchBookByPublicationYear(publicationYear);
+        return ResponseEntity.status(HttpStatus.OK).body(buildSuccessResponse(response, HttpStatus.OK));
     }
 
     @Operation(summary = "Search Books by Publication Year REST API", description = "This REST API is used to Search  Books by Publication Year")

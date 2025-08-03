@@ -16,7 +16,7 @@ public class BookMapper {
         bookLibrary.setAuthor(bookRequest.getAuthor());
         bookLibrary.setIsbn(bookRequest.getIsbn());
         bookLibrary.setQuantity(bookRequest.getQuantity());
-        bookLibrary.setPublicationYear(bookRequest.getPublivationYear());
+        bookLibrary.setPublicationYear(bookRequest.getPublicationYear());
         return bookLibrary;
     }
 

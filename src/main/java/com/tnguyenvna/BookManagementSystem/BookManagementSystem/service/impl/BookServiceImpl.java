@@ -52,7 +52,7 @@ public class BookServiceImpl implements BookServices {
             bookInfoValidations.isBookTitleAlreadyExists(bookRequest.getTitle());
             bookInfoValidations.validateTitle(bookRequest.getTitle());
             bookInfoValidations.validateAuthor(bookRequest.getAuthor());
-            bookInfoValidations.validatePublicationYear(bookRequest.getPublivationYear());
+            bookInfoValidations.validatePublicationYear(bookRequest.getPublicationYear());
 
             BookLibrary bookLibrary = bookMapper.mapBookRequestToBookLibrary(bookRequest);
             bookRepository.save(bookLibrary);
@@ -160,10 +160,10 @@ public class BookServiceImpl implements BookServices {
                 if (bookRequest.getIsbn() != null) {
                     updateBook.setIsbn(bookRequest.getIsbn());
                 }
-                if (bookRequest.getPublivationYear() != null
-                        && !bookRequest.getPublivationYear().equals(updateBook.getPublicationYear())) {
-                    bookInfoValidations.validatePublicationYear(bookRequest.getPublivationYear());
-                    updateBook.setPublicationYear(bookRequest.getPublivationYear());
+                if (bookRequest.getPublicationYear() != null
+                        && !bookRequest.getPublicationYear().equals(updateBook.getPublicationYear())) {
+                    bookInfoValidations.validatePublicationYear(bookRequest.getPublicationYear());
+                    updateBook.setPublicationYear(bookRequest.getPublicationYear());
                 }
 
                 BookLibrary bookLibrary = bookRepository.save(updateBook);
@@ -187,7 +187,9 @@ public class BookServiceImpl implements BookServices {
             log.info("Book successfully deleted with id: " + id);
         } catch (Exception ex) {
             log.error("Error while deleting Book: {}", ex.getMessage());
-            throw new NotFoundException("Error Occurred while deleting Book: " + ex.getMessage());
+            // throw new NotFoundException("Error Occurred while deleting the Book: " + ex.getMessage());
+            throw new NotFoundException("Error occurred while deleting the book");
+
         }
         return ApiResponse.builder().status(HttpStatus.OK).dateTime(LocalDateTime.now()).build();
     }

@@ -16,6 +16,6 @@ public class BookRequest {
     private String author;
     private String isbn;
     private Integer quantity;
-    private Year publivationYear;
+    private Year publicationYear;
 
 }

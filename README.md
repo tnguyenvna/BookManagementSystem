@@ -20,7 +20,7 @@ publicationYear.
 
 ## Technical Specifications
 - The application was built using Java 21 and Spring Boot version: 3.2.5 .
-- For database access, I use Spring Data JPA and H2 in-memory database for data 
+- For database access, I use Spring Data JPA and MySQl in-memory database for data 
 storage.
 - I Include validation checks. For instance, a book should have a valid title, 
 author, and publication year based on the criteria I defined.
@@ -35,3 +35,12 @@ book by ID that doesn't exist, it should return a Not Found status.
 
 ## API Responses
 - The API responses is in JSON format.
+
+## Database Configuration
+
+- Before running the project, create the database manually:
+
+```sql
+CREATE DATABASE store_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+- updating -
